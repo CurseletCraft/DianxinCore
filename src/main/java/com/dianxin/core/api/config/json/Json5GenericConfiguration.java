@@ -18,7 +18,7 @@ import java.nio.file.Files;
  * @param <T> Kiểu config cụ thể, phải kế thừa AbstractBotConfiguration
  */
 @ApiStatus.Experimental
-@SuppressWarnings({"ResultOfMethodCallIgnored", "FieldCanBeLocal"})
+@SuppressWarnings({"ResultOfMethodCallIgnored"})
 public class Json5GenericConfiguration<T extends AbstractBotConfiguration> {
 
     private final Logger logger = LoggerFactory.getLogger(Json5GenericConfiguration.class);
@@ -41,25 +41,32 @@ public class Json5GenericConfiguration<T extends AbstractBotConfiguration> {
         this.configFile = new File(filePath);
         this.clazz = clazz;
 
-        // Nếu file chưa có, copy từ resource
-        if(!configFile.exists()) {
-            try (InputStream in = getClass().getClassLoader().getResourceAsStream(defaultResource)) {
-                if(in == null) {
-                    throw new RuntimeException("Không tìm thấy default config: " + defaultResource);
-                }
-                configFile.getParentFile().mkdirs();
-                Files.copy(in, configFile.toPath());
-                logger.info("✅ File config mặc định đã được tạo: {}", configFile.getAbsolutePath());
-            }
-        }
+        ensureFileExists();
 
         // Load lần đầu
         reloadConfig();
     }
 
-    /**
-     * Reload config từ file JSON5.
-     */
+    /** Đảm bảo file config tồn tại, copy từ resource nếu cần */
+    private void ensureFileExists() throws IOException {
+        if (configFile.exists()) return;
+
+        // Copy từ resource
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(defaultResource)) {
+            if (in == null) {
+                throw new RuntimeException("Không tìm thấy default config: " + defaultResource);
+            }
+
+            // Nếu file nằm ở root project (không có parent), skip mkdirs
+            File parent = configFile.getParentFile();
+            if (parent != null) parent.mkdirs();
+
+            Files.copy(in, configFile.toPath());
+            logger.info("✅ File config mặc định đã được tạo: {}", configFile.getAbsolutePath());
+        }
+    }
+
+    /** Reload config từ file JSON5 */
     public void reloadConfig() {
         try {
             String json5 = Files.readString(configFile.toPath(), StandardCharsets.UTF_8);
@@ -70,9 +77,7 @@ public class Json5GenericConfiguration<T extends AbstractBotConfiguration> {
         }
     }
 
-    /**
-     * Lưu config hiện tại ra file.
-     */
+    /** Lưu config hiện tại ra file JSON5 */
     public void saveConfig() {
         try {
             String json5 = Json5.of(botConfig);
