@@ -1,4 +1,4 @@
-package com.dianxin.core.api.config;
+package com.dianxin.core.api.config.yaml;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.DumperOptions;

@@ -1,10 +1,13 @@
-package com.dianxin.core.api.config;
+package com.dianxin.core.api.config.yaml;
+
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+@ApiStatus.Internal
 public interface FileConfiguration {
     void saveDefaultConfig();
 

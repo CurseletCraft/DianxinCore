@@ -1,4 +1,4 @@
-package com.dianxin.core.api.config;
+package com.dianxin.core.api.config.yaml;
 
 import java.util.*;
 

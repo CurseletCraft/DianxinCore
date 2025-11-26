@@ -1,4 +1,4 @@
-package com.dianxin.core.api.commands;
+package com.dianxin.core.api.config.yaml;
 
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
