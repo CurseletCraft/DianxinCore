@@ -1,7 +1,6 @@
 package com.dianxin.core.api.config.json;
 
 import org.apache.juneau.marshaller.Json5;
-import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +13,9 @@ import java.nio.file.Files;
 /**
  * Json5Configuration hỗ trợ đọc config JSON5,
  * đồng thời có thể reload lại config khi runtime.
+ * @deprecated Use {@link Json5GenericConfiguration} instead.
  */
-@ApiStatus.Experimental
+@Deprecated
 @SuppressWarnings({"ResultOfMethodCallIgnored", "FieldCanBeLocal"})
 public class Json5Configuration {
     private AbstractBotConfiguration botConfig;

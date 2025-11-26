@@ -1,7 +1,6 @@
 package com.dianxin.core.api.config.json;
 
 import org.apache.juneau.marshaller.Json5;
-import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +16,6 @@ import java.nio.file.Files;
  *
  * @param <T> Kiểu config cụ thể, phải kế thừa AbstractBotConfiguration
  */
-@ApiStatus.Experimental
 @SuppressWarnings({"ResultOfMethodCallIgnored"})
 public class Json5GenericConfiguration<T extends AbstractBotConfiguration> {
 
