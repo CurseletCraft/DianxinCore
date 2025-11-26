@@ -9,6 +9,7 @@ import java.util.*;
 public class YamlConfiguration extends MemoryConfiguration implements FileConfiguration {
 
     private final Yaml yaml;
+    private String defaultResourceName;
 
     private File file;
 
@@ -18,6 +19,11 @@ public class YamlConfiguration extends MemoryConfiguration implements FileConfig
         options.setPrettyFlow(true);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         this.yaml = new Yaml(options);
+    }
+
+    public YamlConfiguration(String defaultResourceName) {
+        this();
+        this.defaultResourceName = defaultResourceName;
     }
 
     // LOAD
@@ -42,6 +48,30 @@ public class YamlConfiguration extends MemoryConfiguration implements FileConfig
     @Override
     public void load(String file) throws IOException {
         load(new File(file));
+    }
+
+    @Override
+    public void saveDefaultConfig() {
+        if (file == null) {
+            throw new IllegalStateException("No config file specified.");
+        }
+
+        if (file.exists()) return;
+
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream(defaultResourceName)) {
+            if (input == null) {
+                throw new RuntimeException("Default resource not found: " + defaultResourceName);
+            }
+
+            file.getParentFile().mkdirs();
+
+            try (OutputStream output = new FileOutputStream(file)) {
+                input.transferTo(output);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     // SAVE

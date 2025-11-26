@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface FileConfiguration {
+    void saveDefaultConfig();
 
     void save(File file) throws IOException;
 
