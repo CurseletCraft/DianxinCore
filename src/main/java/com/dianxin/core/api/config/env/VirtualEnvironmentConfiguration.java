@@ -4,16 +4,23 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 @SuppressWarnings("unused")
 public class VirtualEnvironmentConfiguration {
-    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+    private static final Dotenv dotenv = VirtualEnvironmentConfiguration.load();
+
+    private static Dotenv load() {
+        String dir = System.getenv().getOrDefault("DOTENV_DIR", ".");
+        return Dotenv.configure().directory(dir).ignoreIfMissing().load();
+    }
 
     private VirtualEnvironmentConfiguration() {}
 
     public static String get(String key) {
-        return dotenv.get(key);
+        // Ưu tiên env hệ thống trước
+        String sys = System.getenv(key);
+        return sys != null ? sys : dotenv.get(key);
     }
 
     public static String getOrThrow(String key) {
-        String value = dotenv.get(key);
+        String value = get(key);
         if (value == null) {
             throw new IllegalStateException("Missing environment variable: " + key);
         }
