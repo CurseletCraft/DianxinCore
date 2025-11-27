@@ -1,4 +1,4 @@
-package com.dianxin.core.api.commands.experimental;
+package com.dianxin.core.api.experimental;
 
 import org.jetbrains.annotations.ApiStatus;
 

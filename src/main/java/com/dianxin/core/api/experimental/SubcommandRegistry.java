@@ -1,4 +1,4 @@
-package com.dianxin.core.api.commands;
+package com.dianxin.core.api.experimental;
 
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.jetbrains.annotations.ApiStatus;

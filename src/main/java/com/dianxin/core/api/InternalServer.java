@@ -3,7 +3,6 @@ package com.dianxin.core.api;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("ClassCanBeRecord")
 final class InternalServer implements Server {
 
     private final JavaDiscordBot bot;
