@@ -49,10 +49,6 @@ import java.util.Collections;
 @SuppressWarnings("unused")
 @ApiStatus.Experimental
 public abstract class BaseCommand extends SimpleCommand {
-
-    /** Logger riêng cho từng command */
-    private final Logger logger;
-
     /** Nếu true → tự động defer reply */
     private final boolean defer;
 
@@ -70,7 +66,7 @@ public abstract class BaseCommand extends SimpleCommand {
      * @param debugEnabled Có bật debug log không
      */
     public BaseCommand(boolean defer, boolean guildOnly, boolean debugEnabled) {
-        this.logger = LoggerFactory.getLogger(this.getClass());
+        super();
         this.defer = defer;
         this.guildOnly = guildOnly;
         this.debugEnabled = debugEnabled;
@@ -134,7 +130,7 @@ public abstract class BaseCommand extends SimpleCommand {
      */
     protected final void debug(Object... objects) {
         if(debugEnabled) {
-            logger.debug(Arrays.toString(objects));
+            getLogger().debug(Arrays.toString(objects));
         }
     }
 
@@ -165,19 +161,5 @@ public abstract class BaseCommand extends SimpleCommand {
     @NotNull
     protected Collection<Permission> requireSelfPermissions() {
         return Collections.emptyList();
-    }
-
-    /**
-     * Thực thi logic của command.
-     *
-     * @param event Sự kiện slash command
-     */
-    public abstract void execute(SlashCommandInteractionEvent event);
-
-    /**
-     * @return Logger của command hiện tại
-     */
-    protected Logger getLogger() {
-        return logger;
     }
 }
