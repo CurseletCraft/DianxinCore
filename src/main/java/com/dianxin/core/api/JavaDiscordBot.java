@@ -4,6 +4,8 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import com.dianxin.core.api.annotations.core.NoInternalInstance;
+import com.dianxin.core.api.annotations.core.OnDisable;
+import com.dianxin.core.api.annotations.core.OnEnable;
 import com.dianxin.core.api.annotations.core.UsingLikeBukkitLogback;
 import com.dianxin.core.api.handler.console.ConsoleCommandManager;
 import net.dv8tion.jda.api.JDA;
@@ -18,6 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -98,6 +103,8 @@ public abstract class JavaDiscordBot {
      */
     private final String botToken;
 
+    private volatile boolean started = false;
+
     /**
      * Creates a new Discord bot instance.
      *
@@ -119,7 +126,12 @@ public abstract class JavaDiscordBot {
      *
      * @throws InterruptedException If the current thread is interrupted.
      */
-    public void start() throws InterruptedException {
+    public synchronized void start() throws InterruptedException {
+        if (started) {
+            throw new IllegalStateException("Bot đã được start rồi!");
+        }
+        started = true;
+
         JDABuilder jdaBuilder;
         EnumSet<GatewayIntent> intents = getIntents();
         Activity activity = getActivity();
@@ -156,18 +168,21 @@ public abstract class JavaDiscordBot {
         consoleManager.startListening(this);
 
         onEnable();
+        invokeLifecycleAnnotation(OnEnable.class);
     }
 
     /**
      * Called when the bot fully starts and is ready.
      * Override to initialize listeners, commands, database, etc.
      */
+    @Deprecated
     public void onEnable() { }
 
     /**
      * Called before the bot shuts down.
      * Override to close resources or save data.
      */
+    @Deprecated
     public void onDisable() { }
 
     /**
@@ -175,6 +190,7 @@ public abstract class JavaDiscordBot {
      * calling {@link #onDisable()}, and closing the JDA connection.
      */
     public void onShutdown() {
+        invokeLifecycleAnnotation(OnDisable.class);
         onDisable();
         logger.info("⏹ Đang tắt bot {}...", botName);
         jda.getPresence().setStatus(OnlineStatus.OFFLINE);
@@ -239,6 +255,24 @@ public abstract class JavaDiscordBot {
      */
     public ConsoleCommandManager getConsoleManager() {
         return consoleManager;
+    }
+
+    private void invokeLifecycleAnnotation(Class<? extends Annotation> ann) {
+        for (Method method : getClass().getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(ann)) continue;
+
+            if (method.getParameterCount() != 0) {
+                throw new IllegalStateException(
+                        "@" + ann.getSimpleName() + " method must have no params: " + method.getName());
+            }
+
+            try {
+                method.setAccessible(true);
+                method.invoke(this);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException("Error invoking @" + ann.getSimpleName(), e);
+            }
+        }
     }
 
     private void trySetupBukkitLikeLogback() {
