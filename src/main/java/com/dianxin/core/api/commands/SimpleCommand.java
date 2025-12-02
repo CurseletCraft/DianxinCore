@@ -24,7 +24,7 @@ public abstract class SimpleCommand implements D4Command {
      *
      * @param event Sự kiện slash command
      */
-    public abstract void execute(SlashCommandInteractionEvent event);
+    protected abstract void execute(SlashCommandInteractionEvent event);
 
     /**
      * Yêu cầu quyền cho user (nếu cần).
