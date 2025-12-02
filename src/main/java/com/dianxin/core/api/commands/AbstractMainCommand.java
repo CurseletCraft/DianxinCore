@@ -1,5 +1,6 @@
 package com.dianxin.core.api.commands;
 
+@Deprecated
 public abstract class AbstractMainCommand extends BaseCommand implements MaincommandRegistry {
     /**
      * Khởi tạo BaseCommand.

@@ -1,6 +1,8 @@
 package com.dianxin.core.api.commands;
 
+import com.dianxin.core.api.DianxinCore;
 import com.dianxin.core.api.annotations.commands.*;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -8,8 +10,61 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <h2>BaseCommand</h2>
+ *
+ * Lớp cơ sở cho tất cả các Slash Command trong hệ thống bot.
+ * <p>
+ * Cung cấp sẵn các tính năng phổ biến:
+ * <ul>
+ *   <li>Kiểm tra môi trường guild-only</li>
+ *   <li>Tự động defer reply (nếu được bật)</li>
+ *   <li>Kiểm tra quyền của user và bot</li>
+ *   <li>Cơ chế debug tiện dụng</li>
+ * </ul>
+ *
+ * <h3>Cách sử dụng:</h3>
+ * <pre>{@code
+ * @DebugCommand
+ * @DeferReply
+ * @GuildOnly
+ * @RequirePermissions(value = Permission.MESSAGE_SEND)
+ * @RequireSelfPermissions(...)
+ * public class PingCommand extends BaseCommand<MyBot> {
+ *     public PingCommand(MyBot bot) {
+ *         super(bot, true, false, true);
+ *     }
+ *
+ *     @Override
+ *     public void execute(SlashCommandInteractionEvent event) {
+ *         event.getHook().sendMessage("🏓 Pong!").queue();
+ *     }
+ * }
+ * }</pre>
+ *
+ */
 public abstract class BaseCommandV2 {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger;
+    private final JDA jda;
+
+    public BaseCommandV2() {
+        this.logger = LoggerFactory.getLogger(this.getClass());
+        this.jda = DianxinCore.getJda();
+    }
+
+    /**
+     * @return Logger của command hiện tại
+     */
+    protected Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * @return Java discord bot chính
+     */
+    protected JDA getJda() {
+        return jda;
+    }
 
     public final void handle(SlashCommandInteractionEvent event) {
         Class<?> clazz = getClass();

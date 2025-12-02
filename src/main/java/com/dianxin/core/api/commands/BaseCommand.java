@@ -46,6 +46,7 @@ import java.util.Collections;
  * }</pre>
  *
  */
+@Deprecated
 @SuppressWarnings("unused")
 @ApiStatus.Experimental
 public abstract class BaseCommand extends SimpleCommand {

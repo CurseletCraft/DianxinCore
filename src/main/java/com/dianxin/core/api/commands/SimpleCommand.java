@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
+@Deprecated
 public abstract class SimpleCommand implements D4Command {
     private final Logger logger;
     private final JDA jda;
